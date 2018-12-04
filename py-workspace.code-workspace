@@ -1,10 +1,7 @@
 {
 	"folders": [
 		{
-			"path": "pizzeria"
-		},
-		{
-			"path": "Django"
+			"path": "mysite"
 		}
 	],
 	"settings": {}
