@@ -1,0 +1,13 @@
+li a {
+    color:green;
+}
+
+body {
+    color:green;
+    background: white url("images/background.jpg");
+    
+    /* background-size:100% 100%; */
+    /* position:absolute; */
+    /* filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/background.jpg'); */
+
+}
