@@ -5,7 +5,7 @@ from django.db import models
 #城市
 class country(models.Model):
     code = models.CharField(primary_key=True,max_length=10)
-    county_name = models.CharField(max_length=100)
+    country_name = models.CharField(max_length=100)
 
 #商品
 class goods(models.Model):
@@ -24,7 +24,7 @@ class trade_type(models.Model):
     type_name = models.CharField(max_length=100)
 
 #国家—商品
-class goods_county(models.Model):
+class goods_country(models.Model):
     rownum = models.IntegerField()
     month = models.CharField(max_length=20)
     country = models.CharField(max_length=255)
