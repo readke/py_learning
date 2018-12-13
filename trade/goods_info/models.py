@@ -35,8 +35,23 @@ class goods_country(models.Model):
     price_rmb = models.DecimalField(max_digits=16,decimal_places=2)
     price_dollar = models.DecimalField(max_digits=16,decimal_places=2)
     
-    
-
     class Meta:
         unique_together = ("month","country","goods","flag")
     #primary =  ("month","country","goods","flag")
+
+#省-商品
+class goods_province(models.Model):
+    rownum = models.IntegerField()
+    month = models.CharField(max_length=20)
+    registration = models.CharField(max_length=255)
+    goods = models.CharField(max_length=255)
+    unit = models.CharField(max_length=255)
+    qty = models.BigIntegerField()
+    flag = models.CharField(max_length=2)
+    price_rmb = models.DecimalField(max_digits=16,decimal_places=2)
+    price_dollar = models.DecimalField(max_digits=16,decimal_places=2)
+    
+    class Meta:
+        unique_together = ("month","registration","goods","flag")
+    #primary =  ("month","country","goods","flag")
+
