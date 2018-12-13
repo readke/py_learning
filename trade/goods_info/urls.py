@@ -6,7 +6,7 @@ urlpatterns = [
     #ex:/polls/list
     
     path('list/',views.goods_list,name='list'),
-    path('ajaxlist/',views.ajax_goods_list,name='list'),
+    path('ajaxlist/',views.ajax_goods_list,name='ajaxlist'),
     path('<int:code>/',views.detail,name='detail'), 
    #3 path('list/',views.goods_list,name='list'),
     #path('list/',views.goods_list,name='list'),
