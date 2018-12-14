@@ -8,14 +8,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{% static 'goods/layui/css/layui.css'%}">
     <link rel="stylesheet" href="{% static 'goods/bootstrap/css/bootstrap.min.css'%}">
-    <script src="{% static 'goods/layui/layui.js'%}"></script>
-    <script src="{% static 'goods/js/jquery-3.3.1.min.js' %}"></script>
-    <script src="{% static 'goods/bootstrap/js/bootstrap.min.js'%}"></script>
-    
-    <script src="{% static 'goods/js/echarts.js' %} "></script>
+    <link rel="stylesheet" href="{% static 'goods/bootstrap-select/css/bootstrap-select.min.css'%}">
 
-
-    <script src="{% static 'goods/js/util.js' %} "></script>
     <title>进出口商品</title>
 </head>
 
@@ -34,69 +28,102 @@
                         <option value="0">出口</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="goodcode">商品</label>
 
+                    <select id="goodcode" class="selectpicker show-tick form-control"  data-live-search="true">
+                        <option selected value="">--选择商品--</option>
+                        {% for good in goods_list %}
+                        <option value="{{good.code}}">{{good.zh_name}}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
                 <button type="button" class="btn btn-default">确定</button>
             </form>
         </div>
-        <div id="main" class="pull-right"></div>
+        <div id="main" class="pull-left"></div>
     </div>
 </body>
+<script src="{% static 'goods/js/common.js'%}"></script>
+<script src="{% static 'goods/layui/layui.js'%}"></script>
+<script src="{% static 'goods/js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'goods/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="{% static 'goods/bootstrap-select/js/bootstrap-select.min.js'%}"></script>
+<script src="{% static 'goods/js/echarts.js' %} "></script>
+<script src="{% static 'goods/js/util.js' %} "></script>
 <script>
     $(function () {
         var height = $(document).height();
-        var width = $(document).width();
-        $('#content').css('height', height).css('width', width)
-        $('#main').css('height', height * 0.9).css('width', width * 0.8)
+        var width = $(document.body).width()
+        $('#content').css('height', height * 0.9).css('width', width - 40)
+        $('#main').css('height', height * 0.9).css('width', width * 0.75).css('margin-left', '10px')
         $('#input-area').css('height', height * 0.9).css('width', width * 0.2)
+        $('.selectpicker').attr("data-width",width * 0.2)
         year = new Date().getFullYear()
         $('#year').val(year)
         flag = $('#flag').val()
-        loadMap(year,flag)
-        
-        layui.use('laydate', function(){
+        good_code = $('#goodcode').val()
+        var param = { "year": year, "flag": flag, 'good_code': good_code }
+        loadWorldMap(param)
+
+        layui.use('laydate', function () {
             var laydate = layui.laydate;
-            
+
             //执行一个laydate实例
             laydate.render({
                 elem: '#year' //指定元素
-                ,type: 'year'
+                , type: 'year'
             });
         });
 
-        $('.btn').on('click',function(){
+        $('.btn').on('click', function () {
             var year = $('#year').val()
             var flag = $('#flag').val()
-            loadMap(year,flag)
-        }) 
+            var good_code = $('#goodcode').val()
+            var param = { "year": year, "flag": flag, 'good_code': good_code }
+            loadWorldMap(param)
+        })
+
+
     })
-    function getTitle(){
+    function getTitle() {
         var flag = $('#flag').val()
         var year = $('#year').val()
-        if(flag == 1){
-            return '世界各国进口商品数据('+year+'年)'
-        }else {
-            return '世界各国出口商品数据('+year+'年)'
+        if (flag == 1) {
+            return '世界各国进口商品数据(' + year + '年)'
+        } else {
+            return '世界各国出口商品数据(' + year + '年)'
         }
     }
-    function loadMap(year,flag){
+    function loadWorldMap(param) {
         var mapdata = ''
-
+        var csrftoken = getCookie('csrftoken');
         $.ajax({
-            url: "{% url 'goods_info:ajaxlist' %}",
-            type: 'get',
+            url: "{% url 'goods_info:ajaxList' %}",
+            type: 'post',
             async: false,
-            data:{"year":year,"flag":flag},
+            data: param,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
             success: function (data) {
                 mapdata = data
             }
         })
+        if (mapdata.length == 0) {
+            layui.use('layer', function () {
+                var layer = layui.layer;
+                layer.msg("当前商品的数据无数据 ")
+            });
+        }
         var chart = echarts.init(document.getElementById('main'));
         $.get("{% static 'goods/data/world.json' %}", function (worldJson) {
             //console.log(worldJson)
             echarts.registerMap('world', worldJson)
             var option = {
                 title: {
-                    text: getTitle() ,
+                    text: getTitle(),
                     //subtext: 'from United Nations, Total population, both sexes combined, as of 1 July (thousands)',
                     //sublink: 'http://esa.un.org/wpp/Excel-Data/population.htm',
                     x: 'center',
@@ -106,13 +133,13 @@
                     trigger: 'item',
                     formatter: function (params) {
                         var value = (params.value + '').split('.');
-                        if(isNaN(params.value)){
+                        if (isNaN(params.value)) {
                             return params.seriesName + '<br/>' + '0.00'
                         }
                         if (value[1] == undefined) {
                             value[1] = '00'
                         }
-                        
+
                         value = value[0].replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1,')
                             + '.' + value[1];
 
@@ -132,12 +159,12 @@
                     }
                 },
                 dataRange: {
-                    min: 1000000.00,
+                    min: 1000.00,
                     max: 200000000000.00,
                     text: ['High', 'Low'],
                     realtime: false,
                     calculable: true,
-                    color: ['orangered',  'green', 'lightskyblue']
+                    color: ['orangered', 'green', 'lightskyblue']
                 },
                 series: [
                     {

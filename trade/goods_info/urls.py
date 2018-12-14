@@ -5,8 +5,9 @@ app_name = 'goods_info'
 urlpatterns = [
     #ex:/polls/list
     
-    path('list/',views.goods_list,name='list'),
-    path('ajaxlist/',views.ajax_goods_list,name='ajaxlist'),
+    path('list/',views.goodsCountryList,name='list'),
+    path('ajaxList/',views.ajaxGoodsCountryList,name='ajaxList'),
+    path('goodsList/',views.goodsList,name="goodsList"),
     path('<int:code>/',views.detail,name='detail'), 
    #3 path('list/',views.goods_list,name='list'),
     #path('list/',views.goods_list,name='list'),
