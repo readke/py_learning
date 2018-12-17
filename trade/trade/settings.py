@@ -127,15 +127,50 @@ STATIC_URL = '/static/'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
         },
+        'file':{
+            'level':'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename':'d:/logs/python/trade.log',
+            'formatter':'verbose',
+        }
     },
     'loggers': {
         'django.db.backends': {
-            'handlers': ['console'],
+            'handlers': ['console','file'],
             'level': 'DEBUG' if DEBUG else 'INFO',
         },
+        
     },
+}
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://172.18.8.61:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            'PASSWORD':'123456',
+            'MAX_ENTRIES': 300,      # 最大缓存个数（默认300）
+            'CULL_FREQUENCY': 3,    # 缓存到达最大个数之后，剔除缓存个数的比例，即：1/CULL_FREQUENCY（默认3）
+        },
+        'TIMEOUT': 300, # 缓存超时时间（默认300，None表示永不过期）
+                
+        'KEY_PREFIX': '',   # 缓存key的前缀（默认空）
+        'VERSION': 1,         # 缓存key的版本（默认1）
+        #'KEY_FUNCTION' 函数名  # 生成key的函数（默认生成 前缀:版本:key）
+
+    }
 }
